@@ -1,0 +1,16 @@
+# Cloudflare Pages redirects file
+# Docs: https://developers.cloudflare.com/pages/configuration/redirects/
+#
+# Format: <source-path>  <destination-path>  <status-code>
+# Cloudflare Pages already strips the .html extension and serves a clean
+# 404 automatically once 404.html exists at the site root — you don't
+# need rules for that here. Use this file for things like forwarding old
+# URLs from the previous Wix site, e.g.:
+#
+# /blank                    /contact          301
+# /projects-2               /work-commercial  301
+# /copy-of-projects         /work-commercial  301
+# /projects/short-form      /work-influencer  301
+# /projects/commercial-design   /work-commercial  301
+#
+# Add your real rules below this line:

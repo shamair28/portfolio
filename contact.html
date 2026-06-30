@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <title>Contact — Shamair Ahmed</title>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #FAF7F3; }
+    @keyframes softFade { from { opacity: 0; } to { opacity: 1; } }
+    input::placeholder, textarea::placeholder { color: #A39A8E; }
+    input:focus, textarea:focus { outline: none; border-color: #7E9178 !important; }
+  </style>
+</helmet>
+
+<div style="font-family:'Hanken Grotesk',sans-serif; background:#FAF7F3; color:#1E1A16; overflow-x:hidden;" data-screen-label="Contact">
+
+  <header style="position:sticky; top:0; z-index:60; display:flex; justify-content:space-between; align-items:center; padding:clamp(18px,3vw,28px) clamp(20px,6vw,56px); background:#FAF7F3; border-bottom:1px solid rgba(30,26,22,0.08);">
+    <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+      <img src="assets/logo/aperture-mark.png" alt="Shamair Ahmed" style="height:28px; width:auto; display:block;" />
+    </a>
+    <button onClick="{{ toggleMenu }}" style="background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:10px; font-family:'Hanken Grotesk',sans-serif; font-size:12px; letter-spacing:0.18em; color:#1E1A16; text-transform:uppercase; padding:8px;">
+      Menu
+      <span style="display:flex; flex-direction:column; gap:4px;">
+        <span style="width:18px; height:1px; background:#1E1A16; display:block;"></span>
+        <span style="width:18px; height:1px; background:#1E1A16; display:block;"></span>
+      </span>
+    </button>
+  </header>
+
+  <main style="max-width:1100px; margin:0 auto; padding:clamp(56px,9vw,96px) clamp(20px,6vw,56px) clamp(80px,10vw,120px); display:grid; grid-template-columns:minmax(260px,1fr) minmax(320px,1.3fr); gap:clamp(40px,6vw,80px);">
+
+    <div>
+      <h2 style="font-family:'Hanken Grotesk',sans-serif; font-weight:500; font-size:14px; letter-spacing:0.2em; text-transform:uppercase; color:#6B6259; margin:0 0 18px;">Contact</h2>
+      <h1 style="font-family:'Bodoni Moda',serif; font-style:italic; font-weight:400; font-size:clamp(32px,5vw,48px); color:#1E1A16; margin:0 0 24px; line-height:1.12;">Let's make something worth watching.</h1>
+      <p style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; line-height:1.7; color:#6B6259; margin:0 0 36px; max-width:42ch;">For videography, photography, content, or social marketing projects — tell me a bit about what you have in mind and I'll get back to you shortly.</p>
+
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <div>
+          <div style="font-family:'Hanken Grotesk',sans-serif; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#8B8378; margin-bottom:6px;">Based in</div>
+          <div style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; color:#1E1A16;">Oakville, Ontario — available across the GTA</div>
+        </div>
+        <div>
+          <div style="font-family:'Hanken Grotesk',sans-serif; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#8B8378; margin-bottom:6px;">Instagram</div>
+          <a href="https://instagram.com/6.lenz" target="_blank" rel="noopener" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; color:#1E1A16; text-decoration:none; display:inline-flex; align-items:center; gap:8px; border-bottom:1px solid rgba(30,26,22,0.25);" style-hover="color:#7E9178 !important; border-color:#7E9178 !important;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5.5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+            @6.lenz
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFFFF; border-radius:14px; padding:clamp(40px,5vw,56px); text-align:center; animation:softFade 0.5s ease;">
+          <h3 style="font-family:'Bodoni Moda',serif; font-style:italic; font-size:28px; margin:0 0 12px;">Thanks for reaching out.</h3>
+          <p style="font-family:'Hanken Grotesk',sans-serif; font-size:15px; color:#6B6259; margin:0;">Your message is on its way — I'll get back to you soon.</p>
+        </div>
+      </sc-if>
+      <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ handleSubmit }}" style="background:#FFFFFF; border-radius:14px; padding:clamp(32px,4vw,44px); display:flex; flex-direction:column; gap:22px;">
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="font-family:'Hanken Grotesk',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#6B6259;">Name</label>
+            <input type="text" required="" placeholder="Your name" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; transition:border-color 0.2s ease;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="font-family:'Hanken Grotesk',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#6B6259;">Email</label>
+            <input type="email" required="" placeholder="you@email.com" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; transition:border-color 0.2s ease;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="font-family:'Hanken Grotesk',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#6B6259;">Message</label>
+            <textarea required="" placeholder="Tell me about your project..." rows="5" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; resize:vertical; transition:border-color 0.2s ease;"></textarea>
+          </div>
+          <button type="submit" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; background:#1E1A16; color:#FAF7F3; border:none; padding:16px; border-radius:100px; cursor:pointer; transition:background 0.3s ease; margin-top:8px;" style-hover="background:#7E9178 !important;">Send Message</button>
+        </form>
+      </sc-if>
+    </div>
+
+  </main>
+
+  <footer style="padding:clamp(40px,6vw,64px) clamp(20px,6vw,56px) clamp(32px,5vw,48px); border-top:1px solid rgba(30,26,22,0.1); display:flex; flex-wrap:wrap; gap:24px; justify-content:space-between; align-items:center;">
+    <img src="assets/logo/aperture-mark.png" alt="Shamair Ahmed" style="height:22px; width:auto; opacity:0.85;" />
+    <nav style="display:flex; flex-wrap:wrap; gap:clamp(16px,3vw,32px);">
+      <a href="index.html" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#6B6259; text-decoration:none; transition:color 0.25s ease;" style-hover="color:#7E9178 !important;">Home</a>
+      <a href="projects.html" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#6B6259; text-decoration:none; transition:color 0.25s ease;" style-hover="color:#7E9178 !important;">Projects</a>
+      <a href="photography.html" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#6B6259; text-decoration:none; transition:color 0.25s ease;" style-hover="color:#7E9178 !important;">Photography</a>
+      <a href="headshots.html" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#6B6259; text-decoration:none; transition:color 0.25s ease;" style-hover="color:#7E9178 !important;">Headshots</a>
+      <a href="contact.html" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#6B6259; text-decoration:none; transition:color 0.25s ease;" style-hover="color:#7E9178 !important;">Contact</a>
+    </nav>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <a href="https://instagram.com/6.lenz" target="_blank" rel="noopener" aria-label="Instagram" style="display:flex; color:#1E1A16; transition:color 0.25s ease;" style-hover="color:#7E9178 !important;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5.5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+      </a>
+      <span style="font-family:'Hanken Grotesk',sans-serif; font-size:12px; color:#8B8378;">© 2026 Shamair Ahmed</span>
+    </div>
+  </footer>
+
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; background:#FAF7F3; z-index:200; display:flex; flex-direction:column; justify-content:center; padding:clamp(32px,8vw,80px); animation:softFade 0.4s ease;">
+      <button onClick="{{ toggleMenu }}" style="position:absolute; top:clamp(20px,3vw,36px); right:clamp(20px,6vw,56px); background:none; border:none; color:#1E1A16; font-family:'Hanken Grotesk',sans-serif; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; cursor:pointer;">Close ✕</button>
+      <nav style="display:flex; flex-direction:column; gap:clamp(12px,2vw,18px);">
+        <a href="index.html" style="font-family:'Hanken Grotesk',sans-serif; font-weight:500; font-size:clamp(32px,7vw,44px); color:#1E1A16; text-decoration:none; letter-spacing:-0.01em;" style-hover="color:#7E9178 !important;">Home</a>
+        <a href="projects.html" style="font-family:'Hanken Grotesk',sans-serif; font-weight:500; font-size:clamp(32px,7vw,44px); color:#1E1A16; text-decoration:none; letter-spacing:-0.01em;" style-hover="color:#7E9178 !important;">Projects</a>
+        <a href="photography.html" style="font-family:'Hanken Grotesk',sans-serif; font-weight:500; font-size:clamp(32px,7vw,44px); color:#1E1A16; text-decoration:none; letter-spacing:-0.01em;" style-hover="color:#7E9178 !important;">Photography</a>
+        <a href="headshots.html" style="font-family:'Hanken Grotesk',sans-serif; font-weight:500; font-size:clamp(32px,7vw,44px); color:#1E1A16; text-decoration:none; letter-spacing:-0.01em;" style-hover="color:#7E9178 !important;">Headshots</a>
+        <a href="contact.html" style="font-family:'Hanken Grotesk',sans-serif; font-weight:500; font-size:clamp(32px,7vw,44px); color:#1E1A16; text-decoration:none; letter-spacing:-0.01em;" style-hover="color:#7E9178 !important;">Contact</a>
+      </nav>
+      <div style="position:absolute; bottom:clamp(32px,6vw,56px); left:clamp(32px,8vw,80px); display:flex; align-items:center; gap:16px;">
+        <span style="font-family:'Hanken Grotesk',sans-serif; color:#8B8378; font-size:14px;">Oakville, ON</span>
+        <a href="https://instagram.com/6.lenz" target="_blank" rel="noopener" aria-label="Instagram" style="display:flex; align-items:center; color:#1E1A16; transition:color 0.25s ease;" style-hover="color:#7E9178 !important;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5.5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+        </a>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { menuOpen: false, submitted: false };
+
+  renderVals() {
+    return {
+      menuOpen: this.state.menuOpen,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      submitted: this.state.submitted,
+      notSubmitted: !this.state.submitted,
+      handleSubmit: (e) => {
+        e.preventDefault();
+        this.setState({ submitted: true });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>
