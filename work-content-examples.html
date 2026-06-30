@@ -43,10 +43,25 @@
   </main>
 
   <section style="max-width:1100px; margin:clamp(40px,6vw,56px) auto clamp(80px,10vw,120px); padding:0 clamp(20px,6vw,56px);">
-    <div style="position:relative; width:100%; padding-top:56.25%; border-radius:14px; overflow:hidden; background:#15110D; box-shadow:0 30px 70px -30px rgba(20,16,12,0.35);">
-      <iframe src="https://www.youtube.com/embed/videoseries?list=PLBQSYlo3S2Q8" title="Shamair Ahmed — Content Examples playlist" style="position:absolute; inset:0; width:100%; height:100%; border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+    <div style="display:flex; align-items:flex-start; gap:20px; flex-wrap:wrap;">
+      <div style="flex:1 1 600px; min-width:280px;">
+        <div style="position:relative; width:100%; padding-top:56.25%; border-radius:14px; overflow:hidden; background:#15110D; box-shadow:0 30px 70px -30px rgba(20,16,12,0.35);">
+          <iframe src="https://www.youtube.com/embed/{{ activeVideoId }}?list=PLBQSYlo3S2Q8" title="Shamair Ahmed — Content Examples playlist" style="position:absolute; inset:0; width:100%; height:100%; border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+        </div>
+      </div>
+      <div style="flex:0 0 300px; min-width:260px; max-width:340px; max-height:clamp(260px,32vw,338px); overflow-y:auto; display:flex; flex-direction:column; gap:6px; background:#FFFFFF; border:1px solid rgba(30,26,22,0.08); border-radius:14px; padding:10px;">
+        <sc-for list="{{ videos }}" as="video" hint-placeholder-count="5">
+          <button onClick="{{ video.select }}" style="display:flex; align-items:center; gap:10px; text-align:left; background:{{ video.rowBg }}; border:none; border-radius:10px; padding:6px; cursor:pointer; width:100%; font-family:'Hanken Grotesk',sans-serif;">
+            <img src="{{ video.thumb }}" alt="" style="width:88px; height:50px; object-fit:cover; border-radius:6px; flex-shrink:0; display:block;" />
+            <span style="display:flex; flex-direction:column; gap:2px; min-width:0;">
+              <span style="font-size:13px; font-weight:500; line-height:1.3; color:{{ video.titleColor }}; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">{{ video.title }}</span>
+              <span style="font-size:11px; color:#8B8378;">{{ video.duration }}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
     </div>
-    <p style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#8B8378; margin:20px 0 0; text-align:center;">Browse the full playlist using the menu icon in the top-right of the player above.</p>
+    <p style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#8B8378; margin:20px 0 0; text-align:center;">Click any video in the playlist to play it above.</p>
   </section>
 
   <nav style="max-width:1400px; margin:0 auto; padding:0 clamp(20px,6vw,56px) clamp(56px,8vw,80px); display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; border-top:1px solid rgba(30,26,22,0.1); padding-top:clamp(28px,4vw,40px);">
@@ -94,13 +109,30 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script>
+const PLAYLIST_VIDEOS = [
+  { id: "6AWLUf3_oeQ", title: "Street Interview — Modern Dating", duration: "0:40" },
+  { id: "QWqKSzVgC78", title: "Darth Rose — \"Please Wait\" (MV Teaser)", duration: "0:37" },
+  { id: "txZt1Tlmmag", title: "Street Interview — Trivia", duration: "1:35" },
+  { id: "GJAKcYTMvIQ", title: "Roncy Village Spotlight", duration: "1:56" },
+  { id: "paxGrzLF0M4", title: "Corporate Sponsor Video Outro", duration: "0:11" },
+];
+
 class Component extends DCLogic {
-  state = { menuOpen: false };
+  state = { menuOpen: false, activeIndex: 0 };
 
   renderVals() {
+    const activeIndex = this.state.activeIndex;
     return {
       menuOpen: this.state.menuOpen,
       toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      activeVideoId: PLAYLIST_VIDEOS[activeIndex].id,
+      videos: PLAYLIST_VIDEOS.map((v, i) => ({
+        ...v,
+        thumb: "https://i.ytimg.com/vi/" + v.id + "/mqdefault.jpg",
+        rowBg: i === activeIndex ? "#F1ECE4" : "transparent",
+        titleColor: i === activeIndex ? "#1E1A16" : "#2E2A26",
+        select: () => this.setState({ activeIndex: i }),
+      })),
     };
   }
 }
