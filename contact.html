@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<link rel="preconnect" href="https://challenges.cloudflare.com" />
+<script
+  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+  async
+  defer
+></script>
 </head>
 <body>
 <x-dc>
@@ -83,6 +89,7 @@
           <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
             <p style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#B3543F; margin:0;">{{ error }}</p>
           </sc-if>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADtoZJOronZMdb_g"></div>
           <button type="submit" disabled="{{ submitting }}" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; background:#1E1A16; color:#FAF7F3; border:none; padding:16px; border-radius:100px; cursor:pointer; transition:background 0.3s ease; margin-top:8px; opacity:{{ submitOpacity }};" style-hover="background:#7E9178 !important;">{{ submitLabel }}</button>
         </form>
       </sc-if>
