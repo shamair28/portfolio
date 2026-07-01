@@ -5,8 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 <link rel="preconnect" href="https://challenges.cloudflare.com" />
+<script>
+  window.__turnstileReady = false;
+  window.__onTurnstileLoad = function () {
+    window.__turnstileReady = true;
+    if (window.__turnstileMountCallback) window.__turnstileMountCallback();
+  };
+</script>
 <script
-  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+  src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__onTurnstileLoad&render=explicit"
   async
   defer
 ></script>
@@ -89,7 +96,7 @@
           <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
             <p style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#B3543F; margin:0;">{{ error }}</p>
           </sc-if>
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAADtoZJOronZMdb_g"></div>
+          <div ref="{{ setTurnstileEl }}"></div>
           <button type="submit" disabled="{{ submitting }}" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; background:#1E1A16; color:#FAF7F3; border:none; padding:16px; border-radius:100px; cursor:pointer; transition:background 0.3s ease; margin-top:8px; opacity:{{ submitOpacity }};" style-hover="background:#7E9178 !important;">{{ submitLabel }}</button>
         </form>
       </sc-if>
@@ -138,9 +145,40 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 const CONTACT_FORM_ENDPOINT = "/api/contact";
+const TURNSTILE_SITE_KEY = "0x4AAAAAADtoZJOronZMdb_g";
 
 class Component extends DCLogic {
-  state = { menuOpen: false, submitted: false, submitting: false, error: null };
+  state = { menuOpen: false, submitted: false, submitting: false, error: null, turnstileToken: null };
+  turnstileWidgetId = null;
+  turnstileEl = null;
+
+  setTurnstileEl = (el) => {
+    this.turnstileEl = el;
+  };
+
+  renderTurnstile() {
+    if (!window.turnstile || !this.turnstileEl || this.turnstileWidgetId) return;
+    this.turnstileWidgetId = window.turnstile.render(this.turnstileEl, {
+      sitekey: TURNSTILE_SITE_KEY,
+      callback: (token) => this.setState({ turnstileToken: token }),
+      "expired-callback": () => this.setState({ turnstileToken: null }),
+      "error-callback": () => this.setState({ turnstileToken: null }),
+    });
+  }
+
+  componentDidMount() {
+    if (window.__turnstileReady) {
+      this.renderTurnstile();
+    } else {
+      window.__turnstileMountCallback = () => this.renderTurnstile();
+    }
+  }
+
+  componentWillUnmount() {
+    if (window.turnstile && this.turnstileWidgetId != null) {
+      window.turnstile.remove(this.turnstileWidgetId);
+    }
+  }
 
   renderVals() {
     return {
@@ -152,10 +190,11 @@ class Component extends DCLogic {
       submitLabel: this.state.submitting ? "Sending…" : "Send Message",
       submitOpacity: this.state.submitting ? 0.6 : 1,
       error: this.state.error,
+      setTurnstileEl: this.setTurnstileEl,
       handleSubmit: (e) => {
         e.preventDefault();
         const form = e.target;
-        const turnstileToken = form["cf-turnstile-response"] ? form["cf-turnstile-response"].value : "";
+        const turnstileToken = this.state.turnstileToken;
         if (!turnstileToken) {
           this.setState({ error: "Please complete the verification challenge." });
           return;
@@ -181,9 +220,12 @@ class Component extends DCLogic {
           })
           .catch((err) => {
             console.error("Contact form submit failed", err);
-            if (window.turnstile) window.turnstile.reset();
+            if (window.turnstile && this.turnstileWidgetId != null) {
+              window.turnstile.reset(this.turnstileWidgetId);
+            }
             this.setState({
               submitting: false,
+              turnstileToken: null,
               error: "Something went wrong sending your message — please try again or reach out on Instagram.",
             });
           });
