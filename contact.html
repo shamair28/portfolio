@@ -70,17 +70,20 @@
         <form onSubmit="{{ handleSubmit }}" style="background:#FFFFFF; border-radius:14px; padding:clamp(32px,4vw,44px); display:flex; flex-direction:column; gap:22px;">
           <div style="display:flex; flex-direction:column; gap:8px;">
             <label style="font-family:'Hanken Grotesk',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#6B6259;">Name</label>
-            <input type="text" required="" placeholder="Your name" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; transition:border-color 0.2s ease;" />
+            <input type="text" name="name" required="" placeholder="Your name" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; transition:border-color 0.2s ease;" />
           </div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <label style="font-family:'Hanken Grotesk',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#6B6259;">Email</label>
-            <input type="email" required="" placeholder="you@email.com" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; transition:border-color 0.2s ease;" />
+            <input type="email" name="email" required="" placeholder="you@email.com" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; transition:border-color 0.2s ease;" />
           </div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <label style="font-family:'Hanken Grotesk',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#6B6259;">Message</label>
-            <textarea required="" placeholder="Tell me about your project..." rows="5" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; resize:vertical; transition:border-color 0.2s ease;"></textarea>
+            <textarea name="message" required="" placeholder="Tell me about your project..." rows="5" style="font-family:'Hanken Grotesk',sans-serif; font-size:16px; padding:14px 16px; border:1px solid rgba(30,26,22,0.18); border-radius:8px; background:#FAF7F3; color:#1E1A16; resize:vertical; transition:border-color 0.2s ease;"></textarea>
           </div>
-          <button type="submit" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; background:#1E1A16; color:#FAF7F3; border:none; padding:16px; border-radius:100px; cursor:pointer; transition:background 0.3s ease; margin-top:8px;" style-hover="background:#7E9178 !important;">Send Message</button>
+          <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
+            <p style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; color:#B3543F; margin:0;">{{ error }}</p>
+          </sc-if>
+          <button type="submit" disabled="{{ submitting }}" style="font-family:'Hanken Grotesk',sans-serif; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; background:#1E1A16; color:#FAF7F3; border:none; padding:16px; border-radius:100px; cursor:pointer; transition:background 0.3s ease; margin-top:8px; opacity:{{ submitOpacity }};" style-hover="background:#7E9178 !important;">{{ submitLabel }}</button>
         </form>
       </sc-if>
     </div>
@@ -127,8 +130,10 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script>
+const CONTACT_FORM_ENDPOINT = "https://script.google.com/macros/s/AKfycbyCwPKqFQsGnQ-YMJKWfbB5mtI7pgpwhMuOS01aFzn_YD4MdbL_k3crEwqkiNQ7XuE9/exec";
+
 class Component extends DCLogic {
-  state = { menuOpen: false, submitted: false };
+  state = { menuOpen: false, submitted: false, submitting: false, error: null };
 
   renderVals() {
     return {
@@ -136,9 +141,33 @@ class Component extends DCLogic {
       toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
       submitted: this.state.submitted,
       notSubmitted: !this.state.submitted,
+      submitting: this.state.submitting,
+      submitLabel: this.state.submitting ? "Sending…" : "Send Message",
+      submitOpacity: this.state.submitting ? 0.6 : 1,
+      error: this.state.error,
       handleSubmit: (e) => {
         e.preventDefault();
-        this.setState({ submitted: true });
+        const form = e.target;
+        const data = {
+          name: form.name.value,
+          email: form.email.value,
+          message: form.message.value,
+        };
+        this.setState({ submitting: true, error: null });
+        fetch(CONTACT_FORM_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then(() => this.setState({ submitted: true, submitting: false }))
+          .catch((err) => {
+            console.error("Contact form submit failed", err);
+            this.setState({
+              submitting: false,
+              error: "Something went wrong sending your message — please try again or reach out on Instagram.",
+            });
+          });
       },
     };
   }
