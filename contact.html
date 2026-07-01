@@ -216,6 +216,10 @@ class Component extends DCLogic {
             if (result && result.result === "error") {
               throw new Error(result.error || "Verification failed");
             }
+            if (window.turnstile && this.turnstileWidgetId != null) {
+              window.turnstile.remove(this.turnstileWidgetId);
+              this.turnstileWidgetId = null;
+            }
             this.setState({ submitted: true, submitting: false });
           })
           .catch((err) => {
