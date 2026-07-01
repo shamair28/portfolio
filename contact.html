@@ -137,7 +137,7 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const CONTACT_FORM_ENDPOINT = "https://script.google.com/macros/s/AKfycbyCwPKqFQsGnQ-YMJKWfbB5mtI7pgpwhMuOS01aFzn_YD4MdbL_k3crEwqkiNQ7XuE9/exec";
+const CONTACT_FORM_ENDPOINT = "/api/contact";
 
 class Component extends DCLogic {
   state = { menuOpen: false, submitted: false, submitting: false, error: null };
@@ -155,10 +155,16 @@ class Component extends DCLogic {
       handleSubmit: (e) => {
         e.preventDefault();
         const form = e.target;
+        const turnstileToken = form["cf-turnstile-response"] ? form["cf-turnstile-response"].value : "";
+        if (!turnstileToken) {
+          this.setState({ error: "Please complete the verification challenge." });
+          return;
+        }
         const data = {
           name: form.name.value,
           email: form.email.value,
           message: form.message.value,
+          turnstileToken,
         };
         this.setState({ submitting: true, error: null });
         fetch(CONTACT_FORM_ENDPOINT, {
@@ -167,9 +173,15 @@ class Component extends DCLogic {
           body: JSON.stringify(data),
         })
           .then((res) => res.json())
-          .then(() => this.setState({ submitted: true, submitting: false }))
+          .then((result) => {
+            if (result && result.result === "error") {
+              throw new Error(result.error || "Verification failed");
+            }
+            this.setState({ submitted: true, submitting: false });
+          })
           .catch((err) => {
             console.error("Contact form submit failed", err);
+            if (window.turnstile) window.turnstile.reset();
             this.setState({
               submitting: false,
               error: "Something went wrong sending your message — please try again or reach out on Instagram.",
